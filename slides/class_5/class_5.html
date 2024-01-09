@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Pensando con Datos en R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="  Mauricio Bucca  Profesor Asistente, Sociología UC" />
+    <script src="libs/header-attrs-2.23/header-attrs.js"></script>
+    <link rel="stylesheet" href="gentle-r.css" type="text/css" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Pensando con Datos en R
+]
+.subtitle[
+## Bases de datos y manipulación con tidyverse
+]
+.author[
+### <br> Mauricio Bucca<br> Profesor Asistente, Sociología UC
+]
+.date[
+### <a href="https://github.com/mebucca">github.com/mebucca</a>
+]
+
+---
+
+
+class: inverse, middle
+
+
+## Continuamos con ...
+
+- Bases de datos
+
+- Manipulación de datos
+
+
+---
+class: fullscreen, left, middle, text-black
+background-image: url("images/typewriter.jpg")
+
+#tidy
+#verse
+
+---
+## Tidyverse y R-base
+
+.center[![](tidy.jpg)]
+
+---
+## Universo tidyverse
+
+
+.center[![](images/tidyverse_packs.png)]
+
+
+---
+class: fullscreen, left, middle, text-black
+background-image: url("images/typewriter.jpg")
+
+.huge[#Importar]
+.huge[#datos]
+
+
+---
+
+
+## readr, haven, readxl y más
+
+![read_data](images/readr.png)
+
+---
+
+## readr: cargar archivos .cvs
+
+
+```r
+library("tidyverse") 
+library("readr") 
+
+setwd("/Users/Mauricio/Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data")
+
+# leer archivo csv
+datos_paes_2023 &lt;- read_csv("paes_2023.csv")
+```
+
+--
+
+
+```
+## # A tibble: 109,328 × 8
+##       mrun sexo  dependencia colegio comuna lenguaje matematicas_1 matematicas_2
+##      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+##  1  3.70e6 Homb… Particular… INSTIT… TEMUCO      816           846           558
+##  2  2.27e7 Mujer Particular… COLEGI… TALCA       364           402           413
+##  3  1.41e7 Homb… Público     INTERN… SANTI…      701           601           428
+##  4  2.16e6 Mujer Público     CENTRO… CURAN…      396           437           399
+##  5  7.52e6 Mujer Particular… COLEGI… RENCA       396           424           385
+##  6  2.11e7 Mujer Particular… COLEGI… PUENT…      663           579           428
+##  7  1.31e7 Mujer Particular… ESCUEL… ERCIL…      396           491           369
+##  8  2.00e7 Mujer Particular… INSTIT… LO BA…      683           631           472
+##  9  3.81e6 Homb… Público     LICEO … SANTI…      386           507           351
+## 10  1.16e7 Mujer Particular… CTRO.E… LIMAC…      582           507           413
+## # ℹ 109,318 more rows
+```
+
+---
+class: fullscreen, left, middle, text-black
+background-image: url("images/typewriter.jpg")
+
+.huge[#Tibble]
+
+
+---
+## tibble: bases de datos ordenadas
+
+&lt;br&gt;
+
+.pull-left[
+![tibble](images/tibble.png)
+]
+
+---
+## Bases de datos ordenadas ("tidy")
+
+Una bases de datos está ordenada si:
+
+--
+
+- Cada columna es una variable.
+
+--
+
+- Cada fila es una observación.
+
+--
+
+- Cada celda es un valor único.
+
+&lt;br&gt;
+
+![tidydata](images/tidy_data.png)
+
+
+---
+class: fullscreen, left, middle, text-black
+background-image: url("images/typewriter.jpg")
+
+.huge[#Pipes]
+
+---
+
+.pull-left[
+.huge[#magritte]
+![](images/magritte.png)
+]
+
+.pull-right[
+.huge[#magrittr]
+![](images/magrittr.png)
+]
+
+&lt;br&gt;
+&lt;br&gt;
+
+#### `%&gt;%` es el operador pipe, contenido en el paquete `magrittr`
+
+---
+
+## ¿Cómo funciona `%&gt;%`?
+
+.pull-left[
+![scream](images/mario.gif)
+]
+.pull-right[
+Simple:
+```
+Mario %&gt;% 
+  encuentra_gorro() %&gt;% 
+  toma_flor()
+```
+]
+
+
+---
+## ¿Cómo funciona `%&gt;%`?
+
+--
+
+- La "tubería" (pipeline) debe siempre comezar con un objeto. Es decir, las funciones deben aplicarse sobre un argumento. Por ejemplo, el siguiente código no tiene sentido:  
+
+  
+  ```r
+  encuentra_gorro() %&gt;% Mario %&gt;% toma_flor()
+  ```
+
+--
+&lt;br&gt;
+
+- El order en que se aplicar las funciones importa. Por ejemplo, las siguientes lineas de código tienen los mismo elementos pero producirían resultados distintos:
+
+.pull-left[
+  
+  ```r
+  persona %&gt;% levantarse() %&gt;% 
+    ducharse() %&gt;% vestirse()
+  ```
+]
+.pull-right[ 
+####resultado: persona en pie, vestida, seca
+]
+
+.pull-bottom[
+.pull-left[
+  
+  ```r
+  persona %&gt;% levantarse() %&gt;% 
+    vestirse()  %&gt;% ducharse()
+  ```
+]
+.pull-right[
+####resultado: persona en pie, vestida, mojada
+]
+]
+
+---
+## ¿Pipes? ¿Para qué?
+
+Las "pipes" de `tidyverse` permiten un flujo sencillo y ordenado en la manipulación de datos:
+
+--
+
+
+
+```r
+datos_paes_2023 %&gt;%
+  select(mrun,colegio,dependencia,comuna,matematicas_2) %&gt;%
+  filter(dependencia == "Público") %&gt;%
+  arrange(desc(matematicas_2)) 
+```
+--
+
+
+```
+## # A tibble: 37,051 × 5
+##        mrun colegio                             dependencia comuna matematicas_2
+##       &lt;dbl&gt; &lt;chr&gt;                               &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt;
+##  1  7196927 INSTITUTO BICENTENARIO J.MIGUEL CA… Público     SAN A…          1000
+##  2 15417392 LICEO MUNICIPALIZADO AMANDA LABARCA Público     VITAC…          1000
+##  3 24872208 LICEO COMERCIAL ALEJANDRO LUBET V   Público     QUILP…           927
+##  4 12441270 LICEO MUNICIPAL OSCAR CASTRO ZUNIGA Público     RANCA…           927
+##  5  5908993 LICEO INSTITUTO NACIONAL            Público     SANTI…           927
+##  6  2896913 LICEO INSTITUTO NACIONAL            Público     SANTI…           927
+##  7 21924968 LICEO MUNICIPAL OSCAR CASTRO ZUNIGA Público     RANCA…           927
+##  8  6639936 LICEO INSTITUTO NACIONAL            Público     SANTI…           927
+##  9 11802381 LICEO INSTITUTO NACIONAL            Público     SANTI…           927
+## 10   843242 LICEO INSTITUTO NACIONAL            Público     SANTI…           927
+## # ℹ 37,041 more rows
+```
+
+
+---
+
+class: fullscreen, left, middle, text-black
+background-image: url("images/typewriter.jpg")
+
+.huge[#dplyr]
+
+---
+
+## dplyr: herramientas intuitivas para manipulación de datos
+
+&lt;br&gt;
+
+.pull-left[
+  ![dplyr](images/dplyr.png)
+]
+
+.pull-right[
+`dplyr` permite:
+
+- ordenar datos
+
+- filtrar casos 
+
+- seleccionar variables
+
+- crear y transformar variables
+
+- agrupar datos
+
+- crear resumen estadísticos
+]
+
+
+---
+class: inverse, center, middle
+
+.huge[
+##select()
+]
+
+---
+
+## select: selección de variables
+
+La función `select()` permite reterner un sub-conjunto de las variables presentes en la base de datos.
+
+Supongamos que sólo estamos interesados en trabajar con las variables `sexo`,`edad` y `educ`. Podemos retener sólo estas tres variables usando la función `select()`.
+ 
+--
+
+
+```r
+datos_paes_2023 %&gt;% select(colegio,dependencia,matematicas_1)
+```
+
+```
+## # A tibble: 109,328 × 3
+##    colegio                                             dependencia matematicas_1
+##    &lt;chr&gt;                                               &lt;chr&gt;               &lt;dbl&gt;
+##  1 INSTITUTO CLARET                                    Particular…           846
+##  2 COLEGIO PIAGET                                      Particular…           402
+##  3 INTERNADO NACIONAL BARROS ARANA                     Público               601
+##  4 CENTRO EDUCACIÓN INTEGRADO ADULTOS FERMÍN FIERRO L… Público               437
+##  5 COLEGIO DE ADULTO LAURA VICUNA DE RENCA             Particular…           424
+##  6 COLEGIO EL RACO                                     Particular…           579
+##  7 ESCUELA PARTICULAR SAN LEONARDO                     Particular…           491
+##  8 INSTITUTO HEBREO DR CHAIM WEIZMANN-ORT              Particular…           631
+##  9 LICEO DE ADULTOS HERBERT VARGAS WALLIS              Público               507
+## 10 CTRO.EDUCACION INTEGRADA DE ADULTOS SAN FRANC       Particular…           507
+## # ℹ 109,318 more rows
+```
+
+
+---
+class: inverse, center, middle
+
+.huge[
+##filter()
+]
+
+---
+
+## filter: selección de variables
+
+La función `filter()` permite reterner el sub-conjunto de observaciones que cumple con las condiciones especificadas por el usuario. 
+
+--
+
+Supongamos que sólo estamos interesados en estudiantes de colegio particulares pagados. Podemos retener este sub-conjunto de filas usando la función `filter()`. 
+
+--
+
+
+```r
+datos_paes_2023 %&gt;% filter(dependencia=="Particular Pagado")
+```
+
+```
+## # A tibble: 15,240 × 8
+##       mrun sexo  dependencia colegio comuna lenguaje matematicas_1 matematicas_2
+##      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+##  1  2.00e7 Mujer Particular… INSTIT… LO BA…      683           631           472
+##  2  7.27e6 Homb… Particular… COLEGI… SANTI…      834           909           825
+##  3  3.49e6 Mujer Particular… JUNIOR… ARICA       582           554           332
+##  4  4.31e6 Homb… Particular… LICEO … RECOL…      714           949           736
+##  5  7.56e5 Homb… Particular… LICEO … ÑUÑOA       816           671           578
+##  6  1.28e7 Mujer Particular… COLEGI… SAN M…      853           567           385
+##  7  1.07e7 Homb… Particular… COLEGI… LA RE…      816          1000           927
+##  8  7.61e6 Homb… Particular… INSTIT… LOS A…      788           971           775
+##  9  1.42e6 Mujer Particular… C EST … ANTOF…      490           389           332
+## 10  4.93e5 Homb… Particular… COLEGI… LA SE…      151           324           245
+## # ℹ 15,230 more rows
+```
+
+---
+## filter: operadores de comparación
+
+Podemos seleccionar observaciones usando los operadores matemáticos para evaluar igualdad/desigualdad y operaciones lógicas.
+
+* Negación (o complemento): alumnos de todos los colegios menos particulares
+
+
+```r
+  datos_paes_2023 %&gt;% filter(dependencia!="Particular Pagado")
+```
+
+--
+
+* Desigualdad y conjunción: solo mujeres con más de 700 puntos en lenguaje 
+
+
+```r
+  datos_paes_2023 %&gt;% filter(sexo=="Mujer" &amp; lenguaje&gt;700)
+```
+
+--
+
+* Muchas otras posibilidades
+
+---
+## filter: operadores lógicos
+
+![dplyr](images/logic_operations.png)
+
+---
+class: inverse, center, middle
+
+
+##mutate()
+
+
+---
+## mutate: creación de datos
+
+Supongamos que queremos crear una nueva variable que calcule el puntaje promedio en las tres pruebas obligatorias:
+
+--
+
+
+```r
+datos_paes_2023 &lt;- datos_paes_2023 %&gt;% 
+  mutate(puntaje_total = (lenguaje + matematicas_1 + matematicas_2)/3)
+```
+
+--
+
+
+```
+## # A tibble: 109,328 × 9
+##       mrun sexo  dependencia colegio comuna lenguaje matematicas_1 matematicas_2
+##      &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+##  1  3.70e6 Homb… Particular… INSTIT… TEMUCO      816           846           558
+##  2  2.27e7 Mujer Particular… COLEGI… TALCA       364           402           413
+##  3  1.41e7 Homb… Público     INTERN… SANTI…      701           601           428
+##  4  2.16e6 Mujer Público     CENTRO… CURAN…      396           437           399
+##  5  7.52e6 Mujer Particular… COLEGI… RENCA       396           424           385
+##  6  2.11e7 Mujer Particular… COLEGI… PUENT…      663           579           428
+##  7  1.31e7 Mujer Particular… ESCUEL… ERCIL…      396           491           369
+##  8  2.00e7 Mujer Particular… INSTIT… LO BA…      683           631           472
+##  9  3.81e6 Homb… Público     LICEO … SANTI…      386           507           351
+## 10  1.16e7 Mujer Particular… CTRO.E… LIMAC…      582           507           413
+## # ℹ 109,318 more rows
+## # ℹ 1 more variable: puntaje_total &lt;dbl&gt;
+```
+
+---
+class: inverse, center, middle
+
+##group_by()
+
+
+---
+## group_by: operaciones agrupadas.
+
+Supongamos que queremos agregar un nueva variable que calcule el promedio en la prueba de matemáticas 1 por dependencia. `group_by()` es una herramienta muy conveniente para realizar este tipo de operaciones.
+
+--
+
+
+```r
+datos_paes_2023 %&gt;% 
+* group_by(dependencia) %&gt;%
+* mutate(promedio_mat1_dependencia = mean(matematicas_1, na.rm=T))  %&gt;%
+  select(mrun,dependencia,matematicas_1,promedio_mat1_dependencia)
+```
+
+```
+## # A tibble: 109,328 × 4
+## # Groups:   dependencia [3]
+##        mrun dependencia              matematicas_1 promedio_mat1_dependencia
+##       &lt;dbl&gt; &lt;chr&gt;                            &lt;dbl&gt;                     &lt;dbl&gt;
+##  1  3703667 Particular Subvencionado           846                      583.
+##  2 22654139 Particular Subvencionado           402                      583.
+##  3 14080890 Público                            601                      544.
+##  4  2155950 Público                            437                      544.
+##  5  7517281 Particular Subvencionado           424                      583.
+##  6 21055758 Particular Subvencionado           579                      583.
+##  7 13089991 Particular Subvencionado           491                      583.
+##  8 19964150 Particular Pagado                  631                      764.
+##  9  3813884 Público                            507                      544.
+## 10 11594045 Particular Subvencionado           507                      583.
+## # ℹ 109,318 more rows
+```
+
+---
+class: inverse, center, middle
+
+
+##summarise()
+
+---
+## summarise: extrayendo información de los datos
+
+&lt;br&gt;
+
+La función `summarise()` permite calcular una variedad de medidas en base a los datos. 
+
+--
+
+- Una de las principales ventajas es que esta función retorna una base de datos con los resultados, que puede ser usado para posterior análisis (ej, gráficos).
+
+--
+
+- Combinando con `group_by()` resulta una herramiendo muy potente. 
+
+
+---
+## summarise: extrayendo información de los datos
+
+Crea una nueva base de datos que contiene promedio en la prueba de matemáticas 1 por dependencia y sexo:
+
+
+```r
+library(tidyverse)
+datos_paes_2023 %&gt;% 
+* group_by(dependencia,sexo) %&gt;%
+* summarise(promedio_dependencia = mean(matematicas_1, ra.rm=T))
+```
+
+```
+## # A tibble: 6 × 3
+## # Groups:   dependencia [3]
+##   dependencia              sexo   promedio_dependencia
+##   &lt;chr&gt;                    &lt;chr&gt;                 &lt;dbl&gt;
+## 1 Particular Pagado        Hombre                 771.
+## 2 Particular Pagado        Mujer                  753.
+## 3 Particular Subvencionado Hombre                 600.
+## 4 Particular Subvencionado Mujer                  563.
+## 5 Público                  Hombre                 563.
+## 6 Público                  Mujer                  522.
+```
+
+Obtenemos una bases de datos con los resultados.
+
+
+---
+class: inverse, center, middle
+
+
+##Gracias!
+
+&lt;br&gt;
+Mauricio Bucca &lt;br&gt;
+https://mebucca.github.io/ &lt;br&gt;
+github.com/mebucca
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"slideNumberFormat": "%current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
