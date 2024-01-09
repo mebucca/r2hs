@@ -21,9 +21,9 @@ __Lo que Aprenderás__:
 
 | Contenido                     | Material                                                                                                                                                  |
 |-------------------------------|---------------------------------------------------------------------------------------|
-| Introducción a R              | [`[Diapositivas]`](https://mebucca.github.io/dar_soc4001/slides/class_1/class_1#1)    |
-| Manipulación de Datos         | [`[Diapositivas]`](https://mebucca.github.io/dar_soc4001/slides/class_5/class_5#1)    |
-| Visualización de Datos        | [`[Diapositivas]`](https://mebucca.github.io/dar_soc4001/slides/class_11/class_11#1)  |
+| Introducción a R              | [`[Diapositivas]`](https://mebucca.github.io/r2hs/slides/class_1/class_1#1)    |
+| Manipulación de Datos         | [`[Diapositivas]`](https://mebucca.github.io/r2hs/slides/class_5/class_5#1)    |
+| Visualización de Datos        | [`[Diapositivas]`](https://mebucca.github.io/r2hs/slides/class_11/class_11#1)  |
 
 ---
 ## Ejercicio Práctico
